@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WorkNest Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkNest</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-color: #121212;
@@ -11,22 +12,19 @@
       --card-color: #1e1e1e;
       --accent-color: #4cafef;
     }
-
     body.light {
-      --bg-color: #f4f4f4;
+      --bg-color: #f5f5f5;
       --text-color: #222;
       --card-color: #fff;
     }
-
     body {
       font-family: 'Poppins', sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
       padding: 0;
-      transition: all 0.3s ease;
+      transition: 0.4s;
     }
-
     header {
       background: var(--card-color);
       padding: 15px 20px;
@@ -35,12 +33,10 @@
       align-items: center;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-
     h1 {
       font-size: 1.4em;
       color: var(--accent-color);
     }
-
     button {
       background: var(--accent-color);
       border: none;
@@ -50,13 +46,11 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .container {
       padding: 20px;
       display: grid;
       gap: 20px;
     }
-
     .card {
       background: var(--card-color);
       border-radius: 12px;
@@ -64,11 +58,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       transition: 0.3s;
     }
-
-    .card:hover {
-      transform: translateY(-3px);
-    }
-
+    .card:hover { transform: translateY(-3px); }
     .section-title {
       margin-bottom: 10px;
       font-weight: 600;
@@ -76,78 +66,92 @@
       border-left: 4px solid var(--accent-color);
       padding-left: 8px;
     }
-
-    .task-list li {
-      margin: 6px 0;
-    }
-
-    .progress-bar {
-      background: #333;
-      border-radius: 10px;
-      height: 8px;
-      overflow: hidden;
-    }
-
-    .progress {
-      background: var(--accent-color);
-      height: 8px;
-      width: 70%;
-    }
-
     footer {
       text-align: center;
       font-size: 0.8em;
       padding: 15px;
       opacity: 0.7;
     }
+    #login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #login input {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+      border: 1px solid #888;
+      width: 200px;
+      text-align: center;
+    }
+    #dashboard {
+      display: none;
+    }
   </style>
 </head>
-
 <body>
-  <header>
-    <h1>WorkNest</h1>
-    <button id="themeToggle">☀️ Light Mode</button>
-  </header>
 
-  <div class="container">
-    <div class="card">
-      <div class="section-title">Today's Tasks</div>
-      <ul class="task-list">
-        <li>✔️ Finish client report for ACME Inc.</li>
-        <li>⏳ Update portfolio website</li>
-        <li>💬 Respond to Fiverr client messages</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <div class="section-title">Earnings Summary</div>
-      <p><strong>Today:</strong> $85</p>
-      <p><strong>This Week:</strong> $560</p>
-      <p><strong>Top Client:</strong> Webriy Agency</p>
-      <div class="progress-bar"><div class="progress"></div></div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">AI Suggestion</div>
-      <p id="suggestion">You’ve worked for 4 hours today. Time for a 15-minute break ☕.</p>
-      <button onclick="newSuggestion()">💡 New Suggestion</button>
-    </div>
+  <!-- Login Screen -->
+  <div id="login">
+    <h1 style="color: var(--accent-color);">Welcome to WorkNest</h1>
+    <p>Enter your name to begin</p>
+    <input type="text" id="username" placeholder="Your name..." />
+    <button onclick="login()">Enter Workspace</button>
   </div>
 
-  <footer>
-    © 2025 WorkNest | Designed by Jed Asamba
-  </footer>
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <header>
+      <h1>WorkNest</h1>
+      <div>
+        <span id="userDisplay"></span>
+        <button id="themeToggle">☀️ Light Mode</button>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <div class="section-title">Today's Tasks</div>
+        <ul>
+          <li>✔️ Complete report for Webriy client</li>
+          <li>⏳ Update Upwork profile description</li>
+          <li>💬 Respond to Fiverr client inquiries</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Earnings Overview</div>
+        <canvas id="earningsChart"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="section-title">AI Productivity Suggestion</div>
+        <p id="suggestion">You're on track! Take a 10-min break ☕</p>
+        <button onclick="newSuggestion()">💡 New Tip</button>
+      </div>
+    </div>
+
+    <footer>© 2025 WorkNest | Designed by Jed Asamba</footer>
+  </div>
 
   <script>
     const body = document.body;
     const themeToggle = document.getElementById('themeToggle');
-    const suggestions = [
-      "Organize your next client call before 2 PM.",
-      "You’ve been productive! Log your completed tasks.",
-      "Consider reaching out to past clients for repeat work.",
-      "Try focusing in 25-minute bursts (Pomodoro method).",
-      "Time to review your week’s goals!"
-    ];
+    const loginPage = document.getElementById('login');
+    const dashboard = document.getElementById('dashboard');
+    const usernameInput = document.getElementById('username');
+    const userDisplay = document.getElementById('userDisplay');
+
+    function login() {
+      const name = usernameInput.value.trim() || "Freelancer";
+      userDisplay.textContent = "👋 Hi, " + name;
+      loginPage.style.display = "none";
+      dashboard.style.display = "block";
+      loadChart();
+    }
 
     themeToggle.onclick = () => {
       body.classList.toggle('light');
@@ -156,9 +160,37 @@
         : '☀️ Light Mode';
     };
 
+    const suggestions = [
+      "Set clear daily goals before starting work.",
+      "Take 5 minutes to plan your next task.",
+      "Your top client hasn’t been contacted this week.",
+      "You’re close to hitting your weekly goal — stay focused!",
+      "Remember to rest your eyes for 5 minutes."
+    ];
+
     function newSuggestion() {
       const random = Math.floor(Math.random() * suggestions.length);
       document.getElementById('suggestion').textContent = suggestions[random];
+    }
+
+    function loadChart() {
+      const ctx = document.getElementById('earningsChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+          datasets: [{
+            label: 'Earnings ($)',
+            data: [120, 150, 80, 200, 180],
+            backgroundColor: 'rgba(76, 175, 239, 0.7)',
+            borderRadius: 8,
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        }
+      });
     }
   </script>
 </body>
