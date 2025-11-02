@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WorkNest Dashboard</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #f1f1f1;
+      --card-color: #1e1e1e;
+      --accent-color: #4cafef;
+    }
+
+    body.light {
+      --bg-color: #f4f4f4;
+      --text-color: #222;
+      --card-color: #fff;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    header {
+      background: var(--card-color);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-size: 1.4em;
+      color: var(--accent-color);
+    }
+
+    button {
+      background: var(--accent-color);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-color);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .section-title {
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 1.1em;
+      border-left: 4px solid var(--accent-color);
+      padding-left: 8px;
+    }
+
+    .task-list li {
+      margin: 6px 0;
+    }
+
+    .progress-bar {
+      background: #333;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress {
+      background: var(--accent-color);
+      height: 8px;
+      width: 70%;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8em;
+      padding: 15px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>WorkNest</h1>
+    <button id="themeToggle">☀️ Light Mode</button>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="section-title">Today's Tasks</div>
+      <ul class="task-list">
+        <li>✔️ Finish client report for ACME Inc.</li>
+        <li>⏳ Update portfolio website</li>
+        <li>💬 Respond to Fiverr client messages</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Earnings Summary</div>
+      <p><strong>Today:</strong> $85</p>
+      <p><strong>This Week:</strong> $560</p>
+      <p><strong>Top Client:</strong> Webriy Agency</p>
+      <div class="progress-bar"><div class="progress"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">AI Suggestion</div>
+      <p id="suggestion">You’ve worked for 4 hours today. Time for a 15-minute break ☕.</p>
+      <button onclick="newSuggestion()">💡 New Suggestion</button>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 WorkNest | Designed by Jed Asamba
+  </footer>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const suggestions = [
+      "Organize your next client call before 2 PM.",
+      "You’ve been productive! Log your completed tasks.",
+      "Consider reaching out to past clients for repeat work.",
+      "Try focusing in 25-minute bursts (Pomodoro method).",
+      "Time to review your week’s goals!"
+    ];
+
+    themeToggle.onclick = () => {
+      body.classList.toggle('light');
+      themeToggle.textContent = body.classList.contains('light')
+        ? '🌙 Dark Mode'
+        : '☀️ Light Mode';
+    };
+
+    function newSuggestion() {
+      const random = Math.floor(Math.random() * suggestions.length);
+      document.getElementById('suggestion').textContent = suggestions[random];
+    }
+  </script>
+</body>
+</html>
